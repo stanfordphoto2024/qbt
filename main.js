@@ -310,7 +310,10 @@ function startAnimation() {
 }
 
 window.addEventListener('click', startAnimation);
-window.addEventListener('touchstart', startAnimation);
+window.addEventListener('touchstart', (e) => {
+    e.preventDefault(); // 防止預設的觸控行為（如捲動）
+    startAnimation();
+}, { passive: false });
 
 function showQLDPC() {
     const finalFormulaContainer = document.getElementById('final-formula-container');
