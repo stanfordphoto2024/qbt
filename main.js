@@ -19,16 +19,8 @@ renderer.domElement.style.touchAction = 'none';
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-
-// Disable zoom on mobile devices
-if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) {
-    controls.enableZoom = false;
-}
-
-// Disable zoom on mobile devices
-if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    controls.enableZoom = false;
-}
+controls.minDistance = 2;
+controls.maxDistance = 70;
 
 // --- Starry Sky ---
 const starVertices = [];
