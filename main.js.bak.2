@@ -319,6 +319,20 @@ let touchStartTime = 0;
 let touchStartPos = { x: 0, y: 0 };
 let isTouching = false;
 
+// Visual touch feedback
+const touchIndicator = document.getElementById('touch-indicator');
+
+function showTouchIndicator(x, y) {
+    if (touchIndicator) {
+        touchIndicator.style.left = x + 'px';
+        touchIndicator.style.top = y + 'px';
+        touchIndicator.style.opacity = '0.8';
+        setTimeout(() => {
+            touchIndicator.style.opacity = '0';
+        }, 300);
+    }
+}
+
 // Unified interaction handler
 function handleInteraction(event, type) {
     console.log(`${type} interaction detected!`);
@@ -335,6 +349,9 @@ function handleInteraction(event, type) {
         clientX = event.clientX;
         clientY = event.clientY;
     }
+    
+    // Show visual feedback
+    showTouchIndicator(clientX, clientY);
     
     // Start animation
     startAnimation();
