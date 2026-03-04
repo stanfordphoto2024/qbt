@@ -310,7 +310,31 @@ function startAnimation() {
 }
 
 window.addEventListener('click', startAnimation);
-window.addEventListener('touchstart', startAnimation);
+
+// For mobile, to avoid conflict with OrbitControls
+let touchStartTime = 0;
+let touchStartPosition = { x: 0, y: 0 };
+
+renderer.domElement.addEventListener('touchstart', (event) => {
+    touchStartTime = Date.now();
+    touchStartPosition.x = event.touches[0].clientX;
+    touchStartPosition.y = event.touches[0].clientY;
+}, { passive: true });
+
+renderer.domElement.addEventListener('touchend', (event) => {
+    const touchEndTime = Date.now();
+    const touchEndPosition = { x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY };
+
+    const deltaX = touchEndPosition.x - touchStartPosition.x;
+    const deltaY = touchEndPosition.y - touchStartPosition.y;
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    const deltaTime = touchEndTime - touchStartTime;
+
+    // It's a 'tap' if the finger moved less than 10px and for less than 500ms
+    if (distance < 10 && deltaTime < 500) {
+        startAnimation();
+    }
+}, { passive: true });
 
 function showQLDPC() {
     const finalFormulaContainer = document.getElementById('final-formula-container');
