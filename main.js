@@ -336,6 +336,26 @@ renderer.domElement.addEventListener('pointerup', (event) => {
     }
 }, { passive: true });
 
+renderer.domElement.addEventListener('touchstart', (event) => {
+    pointerDownTime = Date.now();
+    pointerDownPosition.x = event.touches[0].clientX;
+    pointerDownPosition.y = event.touches[0].clientY;
+}, { passive: true });
+
+renderer.domElement.addEventListener('touchend', (event) => {
+    const pointerUpTime = Date.now();
+    const pointerUpPosition = { x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY };
+
+    const deltaX = pointerUpPosition.x - pointerDownPosition.x;
+    const deltaY = pointerUpPosition.y - pointerDownPosition.y;
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    const deltaTime = pointerUpTime - pointerDownTime;
+
+    if (distance < 10 && deltaTime < 500) {
+        startAnimation();
+    }
+}, { passive: true });
+
 function showQLDPC() {
     const finalFormulaContainer = document.getElementById('final-formula-container');
     katex.render("\\text{Logical Qubits} = \\frac{N_{\\text{physical}}}{d^2}", finalFormulaContainer, { throwOnError: false });
