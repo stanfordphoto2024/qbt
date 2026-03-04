@@ -20,7 +20,7 @@ renderer.domElement.style.touchAction = 'none';
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.minDistance = 2;
-controls.maxDistance = 70;
+controls.maxDistance = 50;
 
 // --- Starry Sky ---
 const starVertices = [];
