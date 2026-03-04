@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qubit Sphere</title>
+    <style>
+        body { margin: 0; background-color: #000; }
+        canvas { display: block; }
+
+        #error-rate-counter {
+            position: absolute;
+            bottom: 25px;
+            right: 60px;
+            color: #00ffff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            opacity: 0;
+        }
+        .bloch-label {
+            position: absolute;
+            opacity: 0.7;
+            pointer-events: none; /* So they don't interfere with mouse controls */
+            transform: translate(-50%, -50%); /* Center the label on its coordinates */
+        }
+        .bloch-label .katex {
+            color: #00ffff;
+            font-size: 24px;
+        }
+
+        #formula-container,
+        #final-formula-container,
+        #bloch-formula-container,
+        .bloch-label {
+            user-select: none;
+            -webkit-user-select: none; /* For Safari */
+            -moz-user-select: none;    /* For Firefox */
+            -ms-user-select: none;     /* For Internet Explorer/Edge */
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+    <div id="error-rate-counter"></div>
+    <div id="formula-container" style="position: absolute; top: 40px; left: 40px; color: white; font-size: 24px; z-index: 100; opacity: 0;"></div>
+    <div id="final-formula-container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 32px; z-index: 100; opacity: 0; white-space: nowrap;"></div>
+    <div id="bloch-formula-container" style="position: absolute; bottom: 40px; width: 100%; text-align: center; color: white; font-size: 24px; z-index: 100; opacity: 0;"></div>
+    <div id="label-0" class="bloch-label"></div>
+    <div id="label-1" class="bloch-label"></div>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    <script type="module" src="main.js"></script>
+</body>
+</html>
