@@ -360,7 +360,7 @@ function showQLDPC() {
     const finalFormulaContainer = document.getElementById('final-formula-container');
     katex.render("\\text{Logical Qubits} = \\frac{N_{\\text{physical}}}{d^2}", finalFormulaContainer, { throwOnError: false });
 
-    const tl = gsap.timeline({ onComplete: () => { controls.enabled = true; isAnimating = false; } });
+    const tl = gsap.timeline({ onComplete: () => { controls.enabled = true; isAnimating = false; controls.maxDistance = 50; } });
     tl.to(particleMaterial.uniforms.uDimFactor, { value: 0.1, duration: 3, ease: 'power2.out' }, 0)
       .to(finalFormulaContainer, { opacity: 1, duration: 3, ease: 'power2.out' }, 0)
       .to(energyLines.material, { opacity: 0.6, duration: 3, ease: 'power2.out' }, 0);
