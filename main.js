@@ -15,6 +15,7 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild(renderer.domElement);
+renderer.domElement.style.touchAction = 'none';
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -319,28 +320,25 @@ function startAnimation() {
     tl.to(camera.position, { z: 50, duration: 4, ease: 'power2.inOut' }, 3.0);
 }
 
-window.addEventListener('click', startAnimation);
+let pointerDownTime = 0;
+let pointerDownPosition = { x: 0, y: 0 };
 
-// For mobile, to avoid conflict with OrbitControls
-let touchStartTime = 0;
-let touchStartPosition = { x: 0, y: 0 };
-
-renderer.domElement.addEventListener('touchstart', (event) => {
-    touchStartTime = Date.now();
-    touchStartPosition.x = event.touches[0].clientX;
-    touchStartPosition.y = event.touches[0].clientY;
+renderer.domElement.addEventListener('pointerdown', (event) => {
+    pointerDownTime = Date.now();
+    pointerDownPosition.x = event.clientX;
+    pointerDownPosition.y = event.clientY;
 }, { passive: true });
 
-renderer.domElement.addEventListener('touchend', (event) => {
-    const touchEndTime = Date.now();
-    const touchEndPosition = { x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY };
+renderer.domElement.addEventListener('pointerup', (event) => {
+    const pointerUpTime = Date.now();
+    const pointerUpPosition = { x: event.clientX, y: event.clientY };
 
-    const deltaX = touchEndPosition.x - touchStartPosition.x;
-    const deltaY = touchEndPosition.y - touchStartPosition.y;
+    const deltaX = pointerUpPosition.x - pointerDownPosition.x;
+    const deltaY = pointerUpPosition.y - pointerDownPosition.y;
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    const deltaTime = touchEndTime - touchStartTime;
+    const deltaTime = pointerUpTime - pointerDownTime;
 
-    // It's a 'tap' if the finger moved less than 10px and for less than 500ms
+    // It's a 'tap' if the pointer moved less than 10px and for less than 500ms
     if (distance < 10 && deltaTime < 500) {
         startAnimation();
     }
