@@ -182,10 +182,15 @@ scene.add(errorParticles);
 let isAnimating = false;
 let hasAnimatedOnce = false;
 function startAnimation() {
-    if (isAnimating || hasAnimatedOnce) return;
+    console.log('Animation triggered!'); // 除錯訊息
+    if (isAnimating || hasAnimatedOnce) {
+        console.log('Animation blocked - already running or completed');
+        return;
+    }
     isAnimating = true;
     hasAnimatedOnce = true;
     controls.enabled = false;
+    console.log('Animation starting...'); // 除錯訊息
 
     const tl = gsap.timeline({
         onComplete: () => {
@@ -311,7 +316,21 @@ function startAnimation() {
 
 window.addEventListener('click', startAnimation);
 window.addEventListener('touchstart', (e) => {
-    e.preventDefault(); // 防止預設的觸控行為（如捲動）
+    console.log('Touch start detected!'); // 除錯訊息
+    e.preventDefault();
+    startAnimation();
+}, { passive: false });
+
+// 加入其他觸控事件作為備份
+window.addEventListener('touchend', (e) => {
+    console.log('Touch end detected!'); // 除錯訊息
+    e.preventDefault();
+    startAnimation();
+}, { passive: false });
+
+window.addEventListener('touch', (e) => {
+    console.log('Touch detected!'); // 除錯訊息
+    e.preventDefault();
     startAnimation();
 }, { passive: false });
 
