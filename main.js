@@ -19,6 +19,16 @@ document.body.appendChild(renderer.domElement);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 
+// Disable zoom on mobile devices
+if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) {
+    controls.enableZoom = false;
+}
+
+// Disable zoom on mobile devices
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    controls.enableZoom = false;
+}
+
 // --- Starry Sky ---
 const starVertices = [];
 for (let i = 0; i < 20000; i++) {
