@@ -181,11 +181,16 @@ scene.add(errorParticles);
 // --- Animation and Interaction ---
 let isAnimating = false;
 let hasAnimatedOnce = false;
-window.addEventListener('click', () => {
-    if (isAnimating || hasAnimatedOnce) return;
+function startAnimation() {
+    console.log('Animation triggered!'); // 除錯訊息
+    if (isAnimating || hasAnimatedOnce) {
+        console.log('Animation blocked - already running or completed');
+        return;
+    }
     isAnimating = true;
     hasAnimatedOnce = true;
     controls.enabled = false;
+    console.log('Animation starting...'); // 除錯訊息
 
     const tl = gsap.timeline({
         onComplete: () => {
@@ -307,6 +312,88 @@ window.addEventListener('click', () => {
 
     // 6. Zoom out to reveal the full grid
     tl.to(camera.position, { z: 50, duration: 4, ease: 'power2.inOut' }, 3.0);
+}
+
+// Enhanced touch interaction system
+let touchStartTime = 0;
+let touchStartPos = { x: 0, y: 0 };
+let isTouching = false;
+
+// Unified interaction handler
+function handleInteraction(event, type) {
+    console.log(`${type} interaction detected!`);
+    
+    // Get coordinates for touch feedback
+    let clientX, clientY;
+    if (event.touches && event.touches.length > 0) {
+        clientX = event.touches[0].clientX;
+        clientY = event.touches[0].clientY;
+    } else if (event.changedTouches && event.changedTouches.length > 0) {
+        clientX = event.changedTouches[0].clientX;
+        clientY = event.changedTouches[0].clientY;
+    } else {
+        clientX = event.clientX;
+        clientY = event.clientY;
+    }
+    
+    // Start animation
+    startAnimation();
+}
+
+// Mouse events
+window.addEventListener('click', (e) => handleInteraction(e, 'Mouse'));
+
+// Touch events with better mobile support
+window.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    isTouching = true;
+    touchStartTime = Date.now();
+    touchStartPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    handleInteraction(e, 'Touch');
+}, { passive: false });
+
+window.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    isTouching = false;
+    const touchDuration = Date.now() - touchStartTime;
+    const deltaX = Math.abs(e.changedTouches[0].clientX - touchStartPos.x);
+    const deltaY = Math.abs(e.changedTouches[0].clientY - touchStartPos.y);
+    
+    // Only trigger if it's a tap (not a swipe)
+    if (touchDuration < 300 && deltaX < 30 && deltaY < 30) {
+        handleInteraction(e, 'Touch End');
+    }
+}, { passive: false });
+
+window.addEventListener('touchmove', (e) => {
+    e.preventDefault(); // Prevent scrolling during touch
+}, { passive: false });
+
+// Pointer events for unified handling (modern browsers)
+window.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'touch') {
+        handleInteraction(e, 'Pointer Touch');
+    }
+});
+
+// Prevent double-tap zoom on mobile
+let lastTouchEnd = 0;
+document.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+    }
+    lastTouchEnd = now;
+}, { passive: false });
+
+// Handle orientation change
+window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
+    }, 100);
 });
 
 function showQLDPC() {

@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <base href="/qbt/">
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Qubit Sphere</title>
     <style>
-        body { margin: 0; background-color: #000; }
-        canvas { display: block; }
+        body { 
+            margin: 0; 
+            background-color: #000; 
+            overflow: hidden;
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        canvas { 
+            display: block; 
+            touch-action: none;
+        }
 
         #error-rate-counter {
             position: absolute;
@@ -21,8 +35,8 @@
         .bloch-label {
             position: absolute;
             opacity: 0.7;
-            pointer-events: none; /* So they don't interfere with mouse controls */
-            transform: translate(-50%, -50%); /* Center the label on its coordinates */
+            pointer-events: none;
+            transform: translate(-50%, -50%);
         }
         .bloch-label .katex {
             color: #00ffff;
@@ -34,9 +48,62 @@
         #bloch-formula-container,
         .bloch-label {
             user-select: none;
-            -webkit-user-select: none; /* For Safari */
-            -moz-user-select: none;    /* For Firefox */
-            -ms-user-select: none;     /* For Internet Explorer/Edge */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            #formula-container {
+                font-size: 18px !important;
+                top: 20px !important;
+                left: 20px !important;
+            }
+            #final-formula-container {
+                font-size: 24px !important;
+            }
+            #bloch-formula-container {
+                font-size: 18px !important;
+                bottom: 20px !important;
+            }
+            .bloch-label .katex {
+                font-size: 18px !important;
+            }
+            #error-rate-counter {
+                font-size: 14px !important;
+                bottom: 20px !important;
+                right: 20px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #formula-container {
+                font-size: 16px !important;
+            }
+            #final-formula-container {
+                font-size: 20px !important;
+            }
+            #bloch-formula-container {
+                font-size: 16px !important;
+            }
+            .bloch-label .katex {
+                font-size: 16px !important;
+            }
+        }
+
+        /* Touch indicator for better mobile feedback */
+        .touch-indicator {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
         }
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
@@ -51,6 +118,7 @@
     <div id="bloch-formula-container" style="position: absolute; bottom: 40px; width: 100%; text-align: center; color: white; font-size: 24px; z-index: 100; opacity: 0;"></div>
     <div id="label-0" class="bloch-label"></div>
     <div id="label-1" class="bloch-label"></div>
+    <div class="touch-indicator" id="touch-indicator"></div>
     <script type="importmap">
         {
             "imports": {
