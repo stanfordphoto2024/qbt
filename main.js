@@ -314,25 +314,104 @@ function startAnimation() {
     tl.to(camera.position, { z: 50, duration: 4, ease: 'power2.inOut' }, 3.0);
 }
 
-window.addEventListener('click', startAnimation);
+// Enhanced touch interaction system
+let touchStartTime = 0;
+let touchStartPos = { x: 0, y: 0 };
+let isTouching = false;
+
+// Visual touch feedback
+const touchIndicator = document.getElementById('touch-indicator');
+
+function showTouchIndicator(x, y) {
+    if (touchIndicator) {
+        touchIndicator.style.left = x + 'px';
+        touchIndicator.style.top = y + 'px';
+        touchIndicator.style.opacity = '0.8';
+        setTimeout(() => {
+            touchIndicator.style.opacity = '0';
+        }, 300);
+    }
+}
+
+// Unified interaction handler
+function handleInteraction(event, type) {
+    console.log(`${type} interaction detected!`);
+    
+    // Get coordinates for touch feedback
+    let clientX, clientY;
+    if (event.touches && event.touches.length > 0) {
+        clientX = event.touches[0].clientX;
+        clientY = event.touches[0].clientY;
+    } else if (event.changedTouches && event.changedTouches.length > 0) {
+        clientX = event.changedTouches[0].clientX;
+        clientY = event.changedTouches[0].clientY;
+    } else {
+        clientX = event.clientX;
+        clientY = event.clientY;
+    }
+    
+    // Show visual feedback
+    showTouchIndicator(clientX, clientY);
+    
+    // Start animation
+    startAnimation();
+}
+
+// Mouse events
+window.addEventListener('click', (e) => handleInteraction(e, 'Mouse'));
+
+// Touch events with better mobile support
 window.addEventListener('touchstart', (e) => {
-    console.log('Touch start detected!'); // 除錯訊息
     e.preventDefault();
-    startAnimation();
+    isTouching = true;
+    touchStartTime = Date.now();
+    touchStartPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    handleInteraction(e, 'Touch');
 }, { passive: false });
 
-// 加入其他觸控事件作為備份
 window.addEventListener('touchend', (e) => {
-    console.log('Touch end detected!'); // 除錯訊息
     e.preventDefault();
-    startAnimation();
+    isTouching = false;
+    const touchDuration = Date.now() - touchStartTime;
+    const deltaX = Math.abs(e.changedTouches[0].clientX - touchStartPos.x);
+    const deltaY = Math.abs(e.changedTouches[0].clientY - touchStartPos.y);
+    
+    // Only trigger if it's a tap (not a swipe)
+    if (touchDuration < 300 && deltaX < 30 && deltaY < 30) {
+        handleInteraction(e, 'Touch End');
+    }
 }, { passive: false });
 
-window.addEventListener('touch', (e) => {
-    console.log('Touch detected!'); // 除錯訊息
-    e.preventDefault();
-    startAnimation();
+window.addEventListener('touchmove', (e) => {
+    e.preventDefault(); // Prevent scrolling during touch
 }, { passive: false });
+
+// Pointer events for unified handling (modern browsers)
+window.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'touch') {
+        handleInteraction(e, 'Pointer Touch');
+    }
+});
+
+// Prevent double-tap zoom on mobile
+let lastTouchEnd = 0;
+document.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+    }
+    lastTouchEnd = now;
+}, { passive: false });
+
+// Handle orientation change
+window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
+    }, 100);
+});
 
 function showQLDPC() {
     const finalFormulaContainer = document.getElementById('final-formula-container');
