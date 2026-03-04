@@ -331,7 +331,7 @@ renderer.domElement.addEventListener('pointerup', (event) => {
     const deltaTime = pointerUpTime - pointerDownTime;
 
     // It's a 'tap' if the pointer moved less than 10px and for less than 500ms
-    if (distance < 10 && deltaTime < 500) {
+    if (distance < 20 && deltaTime < 600) {
         startAnimation();
     }
 }, { passive: true });
@@ -351,7 +351,7 @@ renderer.domElement.addEventListener('touchend', (event) => {
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     const deltaTime = pointerUpTime - pointerDownTime;
 
-    if (distance < 10 && deltaTime < 500) {
+    if (distance < 20 && deltaTime < 600) {
         startAnimation();
     }
 }, { passive: true });
