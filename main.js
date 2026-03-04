@@ -181,7 +181,7 @@ scene.add(errorParticles);
 // --- Animation and Interaction ---
 let isAnimating = false;
 let hasAnimatedOnce = false;
-window.addEventListener('click', () => {
+function startAnimation() {
     if (isAnimating || hasAnimatedOnce) return;
     isAnimating = true;
     hasAnimatedOnce = true;
@@ -307,7 +307,10 @@ window.addEventListener('click', () => {
 
     // 6. Zoom out to reveal the full grid
     tl.to(camera.position, { z: 50, duration: 4, ease: 'power2.inOut' }, 3.0);
-});
+}
+
+window.addEventListener('click', startAnimation);
+window.addEventListener('touchstart', startAnimation);
 
 function showQLDPC() {
     const finalFormulaContainer = document.getElementById('final-formula-container');
